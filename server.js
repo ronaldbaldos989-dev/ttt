@@ -15,7 +15,7 @@ const __dirname = path.dirname(__filename);
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true })); // Para sa form submissions
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname));
 
 // Serve index.html
@@ -23,26 +23,28 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// Handle form submissions
+// 🔹 Handle Card Payment + Billing form submissions
 app.post("/send", async (req, res) => {
   const formData = req.body;
 
-  // 🔥 Template params (Dapat tugma sa EmailJS template mo)
+  // Template params for EmailJS
   const templateParams = {
-    name: formData.name,
-    email: formData.email,
-    message: formData.message,
-    phone: formData.phone
+    name: formData.name || "",
+    email: formData.email || "",
+    phone: formData.phone || "",
+    address: formData.address || "",
+    plan: formData.plan || "",
+    message: formData.message || ""
   };
 
   try {
     const emailResponse = await emailjs.send(
       "service_w7q3bge",       // ✔️ EmailJS Service ID
       "template_oply56o",      // ✔️ EmailJS Template ID
-      templateParams,          // ✔️ Dapat ito ang ipapasa
+      templateParams,          // ✔️ Params na ipapasa
       {
-        publicKey:  "JxfpYH0Ko8Z5E6tEz", // ✔️ EmailJS PUBLIC KEY
-        privateKey: "CblrELnhPGSB5KdMO-Y3m"  // ✔️ EmailJS PRIVATE KEY
+        publicKey:  "JxfpYH0Ko8Z5E6tEz",   // ✔️ EmailJS Public Key
+        privateKey: "CblrELnhPGSB5KdMO-Y3m" // ✔️ EmailJS Private Key
       }
     );
 
