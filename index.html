@@ -1012,15 +1012,6 @@ document.addEventListener('input', e=>{
   }
 });
 
-/* ==============================
-   PAYMENT → SUCCESS
-============================== */
-paymentNext.addEventListener('click', e=>{
-  e.preventDefault();
-  if(paymentNext.disabled) return;
-  paymentModal.style.display='none';
-  successModal.style.display='flex';
-});
 
 /* ==============================
    SUCCESS CLOSE
