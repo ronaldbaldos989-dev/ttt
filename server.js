@@ -27,14 +27,22 @@ app.get("/", (req, res) => {
 app.post("/send", async (req, res) => {
   const formData = req.body;
 
+  // 🔥 Template params (Dapat tugma sa EmailJS template mo)
+  const templateParams = {
+    name: formData.name,
+    email: formData.email,
+    message: formData.message,
+    phone: formData.phone
+  };
+
   try {
     const emailResponse = await emailjs.send(
-      process.env.EMAILJS_SERVICE_ID,
-      process.env.EMAILJS_TEMPLATE_ID,
-      formData,
+      "service_w7q3bge",       // ✔️ EmailJS Service ID
+      "template_oply56o",      // ✔️ EmailJS Template ID
+      templateParams,          // ✔️ Dapat ito ang ipapasa
       {
-        publicKey: process.env.EMAILJS_PUBLIC_KEY,
-        privateKey: process.env.EMAILJS_PRIVATE_KEY
+        publicKey:  "JxfpYH0Ko8Z5E6tEz", // ✔️ EmailJS PUBLIC KEY
+        privateKey: "CblrELnhPGSB5KdMO-Y3m"  // ✔️ EmailJS PRIVATE KEY
       }
     );
 
